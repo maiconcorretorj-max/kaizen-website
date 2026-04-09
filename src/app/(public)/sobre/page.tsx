@@ -190,7 +190,14 @@ export default async function SobrePage({ searchParams }: { searchParams?: { pre
               <div key={`${member.name}-${member.role}-${member.creci}`} className="text-center group w-full max-w-[18rem]">
                 <div className="relative w-full aspect-[2/3] rounded-2xl overflow-hidden mb-4 shadow-md group-hover:shadow-lg transition-shadow">
                   {member.image ? (
-                    <img src={member.image} alt={member.name || 'Membro da equipe'} loading="lazy" decoding="async" width={576} height={864} className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300" />
+                    <Image
+                      src={member.image}
+                      alt={member.name || 'Membro da equipe'}
+                      fill
+                      quality={100}
+                      sizes="(max-width: 768px) 88vw, (max-width: 1280px) 32vw, 320px"
+                      className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                    />
                   ) : (
                     <div className="h-full w-full bg-gray-100 flex items-center justify-center"><Users className="h-12 w-12 text-gray-400" /></div>
                   )}

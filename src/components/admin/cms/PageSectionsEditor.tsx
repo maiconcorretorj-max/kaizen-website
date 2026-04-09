@@ -174,6 +174,11 @@ export default function PageSectionsEditor({ pageSlug, title, description }: Pag
     const resolvedType = getSectionMeta(pageSlug, section.section_type, section.section_key, parsed).type
     const nextStatus: SectionStatus = 'published'
     const supabase = createClient() as any
+    await supabase
+      .from('cms_pages')
+      .update({ status: 'published' })
+      .eq('id', section.page_id)
+
     const { data, error } = await supabase.from('page_sections').update({ section_key: normalizeKey(section.section_key), section_type: resolvedType, admin_title: section.admin_title, content: parsed, position: section.position, is_active: section.is_active, status: nextStatus }).eq('id', section.id).eq('page_id', section.page_id).select('id')
     if (error) { toast({ title: 'Erro ao salvar seção', description: error.message, variant: 'destructive' }); return }
     if (!data || data.length === 0) { toast({ title: 'Nenhuma alteração aplicada', description: 'Verifique permissões RLS para page_sections.', variant: 'destructive' }); return }

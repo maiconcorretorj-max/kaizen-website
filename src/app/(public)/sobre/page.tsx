@@ -62,16 +62,6 @@ async function fetchSobreData(includeDraft: boolean) {
     ? cmsContent
     : await getLegacyContentBlocksByPages(['sobre'])
 
-  if (!hasCmsContent) {
-    ;[
-      'about_team1_name', 'about_team1_role', 'about_team1_creci', 'about_team1_image',
-      'about_team2_name', 'about_team2_role', 'about_team2_creci', 'about_team2_image',
-      'about_team3_name', 'about_team3_role', 'about_team3_creci', 'about_team3_image',
-    ].forEach((key) => {
-      delete content[key]
-    })
-  }
-
   const sectionOrderMap = { ...DEFAULT_ORDER_MAP }
   sections.forEach((item, index) => {
     if (item.section_type in sectionOrderMap) {

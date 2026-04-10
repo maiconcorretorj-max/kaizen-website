@@ -32,6 +32,16 @@ jobs:
 
       - name: Run baseline collection
         run: |
+          if [ -z "${BASE_URL}" ] || [ -z "${SUPABASE_URL}" ] || [ -z "${SUPABASE_ANON_KEY}" ]; then
+            echo "Missing required secrets: BASE_URL, SUPABASE_URL, SUPABASE_ANON_KEY"
+            exit 1
+          fi
+
+          if [ -z "${USER_EMAIL}" ] || [ -z "${USER_PASSWORD}" ]; then
+            echo "Missing SECURITY_USER_EMAIL or SECURITY_USER_PASSWORD"
+            exit 1
+          fi
+
           npx newman run postman/kaizen-security.collection.json \
             --env-var "baseUrl=${BASE_URL}" \
             --env-var "supabaseUrl=${SUPABASE_URL}" \

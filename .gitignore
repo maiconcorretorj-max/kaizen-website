@@ -32,3 +32,9 @@ Thumbs.db
 
 # accidental nested path created during patching
 Users/
+
+# supabase local temp
+supabase/.temp/
+
+# vercel local linking
+.vercel/

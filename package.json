@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "security:baseline": "newman run postman/kaizen-security.collection.json",
-    "security:advanced": "newman run postman/kaizen-security2.collection.json"
+    "security:advanced": "newman run kaizen-security-advanced.collection.json"
   },
   "engines": {
     "node": ">=18.18"

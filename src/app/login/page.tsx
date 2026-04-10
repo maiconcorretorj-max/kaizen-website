@@ -79,14 +79,14 @@ export default function LoginPage() {
           {/* Logo */}
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex flex-col items-center gap-2">
-              <div className="rounded-2xl overflow-hidden shadow-lg">
+              <div className="h-16 w-16 rounded-2xl bg-[#0A2A66] flex items-center justify-center shadow-lg ring-1 ring-[#0A2A66]/15">
                 <Image
                   src="/logo-kaizen.png?v=6"
                   alt="Logo Kaizen"
                   width={64}
                   height={64}
                   unoptimized
-                  className="h-14 w-14 object-contain"
+                  className="h-10 w-10 object-contain"
                   priority
                 />
               </div>

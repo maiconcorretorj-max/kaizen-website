@@ -59,6 +59,7 @@ const sidebarLinks: SidebarLink[] = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [userName, setUserName] = useState<string>('Administrador')
   const [userAvatar, setUserAvatar] = useState<string>('')
   const pathname = usePathname()
@@ -97,9 +98,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [])
 
   const handleLogout = async () => {
+    if (isLoggingOut) return
+
+    setIsLoggingOut(true)
     const supabase = createClient()
-    await supabase.auth.signOut()
-    router.replace('/login')
+
+    try {
+      await supabase.auth.signOut()
+      router.replace('/login')
+      router.refresh()
+      setTimeout(() => {
+        window.location.assign('/login')
+      }, 150)
+    } catch {
+      window.location.assign('/login')
+    } finally {
+      setIsLoggingOut(false)
+    }
   }
 
   return (
@@ -227,11 +242,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             Minha Conta
           </Link>
           <button
+            type="button"
             onClick={handleLogout}
+            disabled={isLoggingOut}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-blue-200 hover:text-red-300 hover:bg-red-500/10 transition-all"
           >
             <LogOut className="h-4 w-4" />
-            Sair
+            {isLoggingOut ? 'Saindo...' : 'Sair'}
           </button>
         </div>
       </aside>

@@ -19,13 +19,6 @@ export default function StorySectionForm({ value, onChange }: SectionFormProps) 
       <div className="space-y-2"><Label>Título</Label><Input value={getString(value, ['title'])} onChange={(e) => setField('title', 'title', e.target.value)} /></div>
       <div className="space-y-2"><Label>Subtítulo</Label><Input value={getString(value, ['subtitle', 'badge'])} onChange={(e) => setField('subtitle', 'badge', e.target.value)} /></div>
       <div className="space-y-2"><Label>Conteúdo</Label><Textarea rows={8} value={getString(value, ['content', 'paragraph_1'])} onChange={(e) => onChange({ ...value, content: e.target.value })} /></div>
-      <AdminImageField
-        label="Imagem"
-        value={getString(value, ['image', 'image_url'])}
-        onChange={(next) => setField('image', 'image_url', next)}
-        pathPrefix="cms/story"
-        advanced
-      />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div className="space-y-2">
           <Label>Destaque da esquerda - Valor</Label>
@@ -60,6 +53,13 @@ export default function StorySectionForm({ value, onChange }: SectionFormProps) 
           />
         </div>
       </div>
+      <AdminImageField
+        label="Imagem"
+        value={getString(value, ['image', 'image_url'])}
+        onChange={(next) => setField('image', 'image_url', next)}
+        pathPrefix="cms/story"
+        advanced
+      />
     </div>
   )
 }

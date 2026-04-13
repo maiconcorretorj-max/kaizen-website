@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -14,7 +14,6 @@ import createClient from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -53,7 +52,7 @@ export default function LoginPage() {
         description: 'Bem-vindo de volta.',
       })
 
-      const redirectTo = searchParams.get('redirectTo')
+      const redirectTo = new URLSearchParams(window.location.search).get('redirectTo')
       const destination = redirectTo?.startsWith('/admin') ? redirectTo : '/admin'
 
       for (let attempt = 0; attempt < 8; attempt += 1) {

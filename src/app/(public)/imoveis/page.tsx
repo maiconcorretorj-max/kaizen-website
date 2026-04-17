@@ -80,10 +80,10 @@ export default function ImoveisPage() {
   return (
     <div className="pt-20 min-h-screen bg-gray-50">
       <Head>
-        <title>Imoveis a venda e aluguel em Campo Grande RJ | Kaizen</title>
+        <title>Imóveis à venda e aluguel em Campo Grande RJ | Kaizen</title>
         <meta
           name="description"
-          content="Veja imoveis a venda e para alugar em Campo Grande, Rio de Janeiro. Filtre por bairro, preco e tipo com atendimento da Kaizen Solucoes Imobiliarias."
+          content="Veja imóveis à venda e para alugar em Campo Grande, Rio de Janeiro. Filtre por bairro, preço e tipo com atendimento da Kaizen Soluções Imobiliárias."
         />
         <link rel="canonical" href="https://imobkaizen.com.br/imoveis" />
       </Head>
@@ -92,8 +92,8 @@ export default function ImoveisPage() {
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="animate-fade-in">
             <span className="text-blue-200 text-sm font-medium uppercase tracking-widest mb-3 block">Portfólio</span>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">Imoveis em Campo Grande e regiao</h1>
-            <p className="text-blue-100 text-lg">Encontre casas, apartamentos e opcoes comerciais para compra e aluguel no Rio de Janeiro.</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">Imóveis em Campo Grande e região</h1>
+            <p className="text-blue-100 text-lg">Encontre casas, apartamentos e opções comerciais para compra e aluguel no Rio de Janeiro.</p>
           </div>
         </div>
       </div>
@@ -144,7 +144,7 @@ export default function ImoveisPage() {
         ) : filteredProperties.length === 0 ? (
           <div className="text-center py-20 animate-fade-in">
             <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-600 mb-2">Nenhum imovel encontrado</h2>
+            <h2 className="text-xl font-semibold text-gray-600 mb-2">Nenhum imóvel encontrado</h2>
             <p className="text-gray-400">Tente ajustar os filtros para encontrar mais resultados</p>
           </div>
         ) : (

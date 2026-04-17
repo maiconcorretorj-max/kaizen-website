@@ -66,8 +66,8 @@ export async function generateMetadata({ searchParams }: { searchParams?: { prev
   const includeDraft = await canPreview(searchParams)
   const seo = await getCmsPageSeoWithFallback('sobre', {
     includeDraft,
-    fallbackTitle: 'Sobre a Kaizen | Imobiliaria em Campo Grande RJ',
-    fallbackDescription: 'Conheca a historia da Kaizen Solucoes Imobiliarias, equipe com CRECI e atendimento especializado em Campo Grande e regiao do Rio de Janeiro.',
+    fallbackTitle: 'Sobre a Kaizen | Imobiliária em Campo Grande RJ',
+    fallbackDescription: 'Conheça a história da Kaizen Soluções Imobiliárias, equipe com CRECI e atendimento especializado em Campo Grande e região do Rio de Janeiro.',
   })
 
   return {

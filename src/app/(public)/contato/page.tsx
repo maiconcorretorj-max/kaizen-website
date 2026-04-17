@@ -56,8 +56,8 @@ export async function generateMetadata({ searchParams }: { searchParams?: { prev
   const includeDraft = await canPreview(searchParams)
   const seo = await getCmsPageSeoWithFallback('contato', {
     includeDraft,
-    fallbackTitle: 'Contato Kaizen | Imobiliaria em Campo Grande RJ',
-    fallbackDescription: 'Entre em contato com a Kaizen Solucoes Imobiliarias por telefone, WhatsApp ou formulario e receba atendimento rapido em Campo Grande RJ.',
+    fallbackTitle: 'Contato Kaizen | Imobiliária em Campo Grande RJ',
+    fallbackDescription: 'Entre em contato com a Kaizen Soluções Imobiliárias por telefone, WhatsApp ou formulário e receba atendimento rápido em Campo Grande RJ.',
   })
 
   return {

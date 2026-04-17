@@ -52,7 +52,7 @@ export default function CallToAction({ content = {} }: CallToActionProps) {
               <Button size="xl" variant="outline"
                 className="border-2 border-white text-white bg-transparent hover:bg-white hover:text-[#0A2A66] w-full sm:w-auto transition-all duration-300">
                 <Phone className="h-5 w-5 mr-2" />
-                Nos Contate
+                Fale Conosco
               </Button>
             </Link>
           </div>

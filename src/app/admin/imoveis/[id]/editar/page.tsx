@@ -41,6 +41,22 @@ export default function EditarImovelPage() {
   const [newImageFiles, setNewImageFiles] = useState<{ file: File; preview: string }[]>([])
   const [deletedImages, setDeletedImages] = useState<string[]>([])
 
+  const isSupportedImage = (file: File) => {
+    const allowed = ['image/jpeg', 'image/png', 'image/webp']
+    return allowed.includes(file.type)
+  }
+
+  const resolveExtension = (file: File) => {
+    const byMime: Record<string, string> = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+    }
+    if (byMime[file.type]) return byMime[file.type]
+    const fromName = file.name.split('.').pop()?.toLowerCase()
+    return fromName && fromName.length <= 8 ? fromName : 'jpg'
+  }
+
   useEffect(() => {
     const load = async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -106,21 +122,56 @@ export default function EditarImovelPage() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const supabase = (await import('@/lib/supabase/client')).default() as any
 
+      for (const img of newImageFiles) {
+        if (!isSupportedImage(img.file)) {
+          toast({
+            title: 'Formato não suportado',
+            description: `Use JPG, PNG ou WEBP. Arquivo: ${img.file.name}`,
+            variant: 'destructive',
+          })
+          return
+        }
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user?.id) {
+        toast({ title: 'Sessão inválida', description: 'Faça login novamente.', variant: 'destructive' })
+        return
+      }
+
       // Upload new images
       const newUrls: string[] = []
       for (let i = 0; i < newImageFiles.length; i++) {
         const { file } = newImageFiles[i]
-        const ext = file.name.split('.').pop()
-        const path = `${form.slug}-${i}-${Date.now()}.${ext}`
+        const ext = resolveExtension(file)
+        const safeSlug = (form.slug || 'imovel').trim() || 'imovel'
+        const path = `properties/${user.id}/${safeSlug}-${Date.now()}-${i}.${ext}`
         const { error: upErr } = await supabase.storage
-          .from('property-images').upload(path, file, { upsert: true })
-        if (!upErr) {
-          const { data: { publicUrl } } = supabase.storage.from('property-images').getPublicUrl(path)
-          newUrls.push(publicUrl)
+          .from('property-images').upload(path, file, {
+            upsert: false,
+            contentType: file.type || `image/${ext}`,
+            cacheControl: '3600',
+          })
+        if (upErr) {
+          throw new Error(`Falha no upload da imagem ${i + 1}: ${upErr.message}`)
         }
+        const { data: { publicUrl } } = supabase.storage.from('property-images').getPublicUrl(path)
+        newUrls.push(publicUrl)
       }
 
       const allImages = [...existingImages, ...newUrls]
+
+      if (allImages.length === 0) {
+        toast({
+          title: 'Adicione ao menos 1 imagem',
+          description: 'Não é possível salvar o imóvel sem imagens.',
+          variant: 'destructive',
+        })
+        return
+      }
 
       const { data, error } = await supabase.from('properties').update({
         title: form.title,
@@ -164,7 +215,7 @@ export default function EditarImovelPage() {
       router.push('/admin/imoveis')
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Tente novamente.'
-      toast({ title: 'Erro inesperado', description: msg, variant: 'destructive' })
+      toast({ title: 'Erro ao salvar imóvel', description: msg, variant: 'destructive' })
     } finally {
       setSaving(false)
     }

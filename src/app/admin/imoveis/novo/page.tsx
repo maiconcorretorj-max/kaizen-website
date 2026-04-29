@@ -72,6 +72,22 @@ export default function NovoImovelPage() {
   const [loading, setLoading] = useState(false)
   const [imageFiles, setImageFiles] = useState<{ file: File; preview: string }[]>([])
 
+  const isSupportedImage = (file: File) => {
+    const allowed = ['image/jpeg', 'image/png', 'image/webp']
+    return allowed.includes(file.type)
+  }
+
+  const resolveExtension = (file: File) => {
+    const byMime: Record<string, string> = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+    }
+    if (byMime[file.type]) return byMime[file.type]
+    const fromName = file.name.split('.').pop()?.toLowerCase()
+    return fromName && fromName.length <= 8 ? fromName : 'jpg'
+  }
+
   const handleImageAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? [])
     const newImgs = files.map((file) => ({ file, preview: URL.createObjectURL(file) }))
@@ -111,19 +127,56 @@ export default function NovoImovelPage() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const supabase = (await import('@/lib/supabase/client')).default() as any
 
+      if (imageFiles.length === 0) {
+        toast({
+          title: 'Adicione ao menos 1 imagem',
+          description: 'O cadastro só é concluído com imagem enviada com sucesso.',
+          variant: 'destructive',
+        })
+        return
+      }
+
+      for (const img of imageFiles) {
+        if (!isSupportedImage(img.file)) {
+          toast({
+            title: 'Formato não suportado',
+            description: `Use JPG, PNG ou WEBP. Arquivo: ${img.file.name}`,
+            variant: 'destructive',
+          })
+          return
+        }
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user?.id) {
+        toast({ title: 'Sessão inválida', description: 'Faça login novamente.', variant: 'destructive' })
+        return
+      }
+
       // Upload images to storage
       const uploadedUrls: string[] = []
       for (let i = 0; i < imageFiles.length; i++) {
         const { file } = imageFiles[i]
-        const ext = file.name.split('.').pop()
-        const path = `${form.slug}-${i}-${Date.now()}.${ext}`
+        const ext = resolveExtension(file)
+        const safeSlug = (form.slug || 'imovel').trim() || 'imovel'
+        const path = `properties/${user.id}/${safeSlug}-${Date.now()}-${i}.${ext}`
         const { error: upErr } = await supabase.storage
           .from('property-images')
-          .upload(path, file, { upsert: true })
-        if (!upErr) {
-          const { data: { publicUrl } } = supabase.storage.from('property-images').getPublicUrl(path)
-          uploadedUrls.push(publicUrl)
+          .upload(path, file, {
+            upsert: false,
+            contentType: file.type || `image/${ext}`,
+            cacheControl: '3600',
+          })
+
+        if (upErr) {
+          throw new Error(`Falha no upload da imagem ${i + 1}: ${upErr.message}`)
         }
+
+        const { data: { publicUrl } } = supabase.storage.from('property-images').getPublicUrl(path)
+        uploadedUrls.push(publicUrl)
       }
 
       const payload = {
@@ -169,7 +222,8 @@ export default function NovoImovelPage() {
       toast({ title: 'Imóvel cadastrado!', description: 'O imóvel foi adicionado com sucesso.' })
       router.push('/admin/imoveis')
     } catch (err) {
-      toast({ title: 'Erro inesperado', description: 'Tente novamente.', variant: 'destructive' })
+      const message = err instanceof Error ? err.message : 'Tente novamente.'
+      toast({ title: 'Erro no cadastro', description: message, variant: 'destructive' })
     } finally {
       setLoading(false)
     }

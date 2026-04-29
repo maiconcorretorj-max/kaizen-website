@@ -40,3 +40,22 @@ create policy "Authenticated can read site visits"
   on public.site_visits for select
   to authenticated
   using (auth.uid() is not null);
+
+-- Hardening (no RBAC mode): authenticated users can only read/update own profile.
+-- This blocks IDOR updates on /rest/v1/profiles?id=eq.<other-user-id>
+drop policy if exists "Users can view their own profile" on public.profiles;
+drop policy if exists "Users can update their own profile" on public.profiles;
+drop policy if exists "Admins can view all profiles" on public.profiles;
+
+create policy "Profiles: user can read own"
+  on public.profiles
+  for select
+  to authenticated
+  using (auth.uid() = id);
+
+create policy "Profiles: user can update own"
+  on public.profiles
+  for update
+  to authenticated
+  using (auth.uid() = id)
+  with check (auth.uid() = id);

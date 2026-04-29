@@ -22,7 +22,7 @@ interface PropertyForm {
   featured: boolean; active: boolean; features: string
 }
 
-const MAX_IMAGE_SIZE_BYTES = 100 * 1024 * 1024
+const MAX_IMAGE_SIZE_BYTES = 150 * 1024 * 1024
 
 export default function EditarImovelPage() {
   const router = useRouter()
@@ -137,7 +137,7 @@ export default function EditarImovelPage() {
         if (img.file.size > MAX_IMAGE_SIZE_BYTES) {
           toast({
             title: 'Arquivo acima do limite',
-            description: `A imagem ${img.file.name} excede 100MB.`,
+            description: `A imagem ${img.file.name} excede 150MB.`,
             variant: 'destructive',
           })
           return

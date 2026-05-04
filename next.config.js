@@ -9,7 +9,7 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline' https:",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
   "connect-src 'self' https: wss:",
-  "frame-src 'self' https://www.google.com https://www.google.com.br https://maps.google.com",
+  "frame-src 'self' https://www.google.com https://www.google.com.br https://maps.google.com https://challenges.cloudflare.com",
 ].join('; ')
 
 const securityHeaders = [

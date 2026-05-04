@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react'
+import Turnstile from 'react-turnstile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,6 +19,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [form, setForm] = useState({ email: '', password: '' })
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [captchaReady, setCaptchaReady] = useState(false)
+
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -25,6 +30,25 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!turnstileSiteKey) {
+      toast({
+        title: 'Turnstile não configurado',
+        description: 'Defina NEXT_PUBLIC_TURNSTILE_SITE_KEY nas variáveis de ambiente.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (!captchaToken || captchaToken.trim().length < 20) {
+      toast({
+        title: 'Confirme o captcha',
+        description: 'Complete o desafio do Cloudflare Turnstile para continuar.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -32,9 +56,15 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithPassword({
         email: form.email,
         password: form.password,
+        options: {
+          captchaToken,
+        },
       })
 
       if (error) {
+        if (error.message.toLowerCase().includes('captcha')) {
+          setCaptchaToken(null)
+        }
         const msg =
           error.message === 'Invalid login credentials'
             ? 'E-mail ou senha incorretos.'
@@ -72,6 +102,7 @@ export default function LoginPage() {
       })
     } finally {
       setLoading(false)
+      setCaptchaToken(null)
     }
   }
 
@@ -155,11 +186,30 @@ export default function LoginPage() {
                 </div>
               </div>
 
+              {turnstileSiteKey ? (
+                <div className="pt-1">
+                  <Turnstile
+                    sitekey={turnstileSiteKey}
+                    onLoad={() => setCaptchaReady(true)}
+                    onVerify={(token) => setCaptchaToken(token)}
+                    onExpire={() => setCaptchaToken(null)}
+                    onError={() => {
+                      setCaptchaReady(false)
+                      setCaptchaToken(null)
+                    }}
+                  />
+                </div>
+              ) : (
+                <p className="text-xs text-red-500">
+                  NEXT_PUBLIC_TURNSTILE_SITE_KEY não configurada.
+                </p>
+              )}
+
               <Button
                 type="submit"
                 size="lg"
                 className="w-full mt-2"
-                disabled={loading}
+                disabled={loading || !captchaReady || !captchaToken}
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
@@ -173,6 +223,12 @@ export default function LoginPage() {
                   </span>
                 )}
               </Button>
+
+              {turnstileSiteKey && !captchaReady ? (
+                <p className="text-xs text-amber-600">
+                  Carregando verificação de segurança...
+                </p>
+              ) : null}
             </form>
           </div>
 

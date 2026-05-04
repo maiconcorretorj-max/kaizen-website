@@ -187,7 +187,7 @@ export default function LoginPage() {
               </div>
 
               {turnstileSiteKey ? (
-                <div className="pt-1">
+                <div className="pt-2 flex justify-center">
                   <Turnstile
                     sitekey={turnstileSiteKey}
                     onLoad={() => setCaptchaReady(true)}
